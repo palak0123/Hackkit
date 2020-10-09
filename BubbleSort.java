@@ -9,7 +9,6 @@ public class BubbleSort {
                     list[j-1] = list[j];
                     list[j] = temp;
                 }
-
             }
         }
 
