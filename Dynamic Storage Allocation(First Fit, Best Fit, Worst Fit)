@@ -1,0 +1,196 @@
+package dyStorage;
+import java.util.*;
+
+
+class block
+{
+	int blockSize; //the size of each partition
+	boolean assigned; //whether the process is assigned to a block
+
+	public block() //default constructor
+	{
+		blockSize = 0;
+		boolean assigned = false; //initially no process is assigned
+	}
+
+
+	public void acceptBlockSize() //accepts the size of each block
+	{
+		Scanner Sc = new Scanner(System.in);
+		System.out.print("Enter size = ");
+		blockSize = Sc.nextInt();
+	}
+
+	public static void sortDescOrder(block B[]) //sorts the memory partitions in descending order
+	{
+		for(int i = 1 ; i < B.length ; i++)
+		{
+			B[i].assigned = false;
+			for(int j = 0 ; j < B.length - i ; j++)
+			{
+				if(B[j].blockSize < B[j+1].blockSize)
+				{
+					int temp = B[j].blockSize;
+					B[j].blockSize = B[j+1].blockSize;
+					B[j+1].blockSize = temp;
+				}
+			}
+		}
+	}
+
+	public static void sortAscOrder(block B[]) //sorts the memory partitions in ascending order
+	{
+		for(int i = 1 ; i < B.length ; i++)
+		{
+			B[i].assigned = false;
+			for(int j = 0 ; j < B.length - i ; j++)
+			{
+				if(B[j].blockSize > B[j+1].blockSize)
+				{
+					int temp = B[j].blockSize;
+					B[j].blockSize = B[j+1].blockSize;
+					B[j+1].blockSize = temp;
+				}
+			}
+		}
+	}
+
+}
+
+class process
+{
+	int bsize; //size of the memory partition to which the process is assigned
+	int psize; //size of the process
+
+	public process() //default constructor
+	{
+		bsize = 0;
+		psize = 0;
+	}
+
+	public void acceptProcess() //accepts the size of process
+	{
+		Scanner Sc = new Scanner(System.in);
+		System.out.print("Enter size = ");
+		psize = Sc.nextInt();
+	}
+	public static void initialize(process p[])
+	{
+		for(int i = 1 ; i < p.length ; i++)
+		{
+			p[i].bsize = 0;
+		}
+	}
+
+	public static void firstFit(block B[] , process p[]) //allocates the process to the blocks according to first bit
+	{
+		for( int i = 0 ; i < p.length ; i++) //loop for number of processes
+		{
+			for(int j = 0 ; j < B.length ; j++) //loop for number of partitions
+			{
+				if(p[i].psize <= B[j].blockSize && B[j].assigned == false)
+				{
+					p[i].bsize = B[j].blockSize;
+					B[j].assigned = true; //the block is assigned a process
+					break;
+				}
+			}
+		}
+	}
+
+	public static void displayProcesses(process p[]) //displays which process is allocated to which block
+	{
+		System.out.println("Proccess\t\tAllocated to block of size");
+		for(int i = 0 ; i < p.length ; i++)
+		{
+			System.out.print("P" + i + "\t\t\t");
+			if(p[i].bsize != 0) //if it is allocated to a block
+			{
+				System.out.println(p[i].bsize + " KB");
+			}
+			else
+			{
+				System.out.println("Not Allocated");
+			}
+		}
+	}
+}
+public class dyStorage {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner Sc = new Scanner(System.in);
+
+		System.out.print("Enter total number of processes = ");
+		int np = Sc.nextInt();
+		process p[] = new process[np]; //array of objects of class process
+
+		for(int i = 0 ; i < np ; i++)
+		{
+			p[i] = new process();
+			System.out.println(" For Process " + i);
+			p[i].acceptProcess();
+		}
+		System.out.println();
+
+		System.out.print("Enter total memory partitions = ");
+		int nb = Sc.nextInt();
+		block B[] = new block[nb]; //array of objects of class block
+
+		System.out.println("Enter block sizes : ");
+		for(int i = 0; i < nb ; i++)
+		{
+			System.out.println("For Block " + i);
+			B[i] = new block();
+			B[i].acceptBlockSize();
+		}
+		int ch = 0;
+		do
+		{
+			do
+			{
+				System.out.println("MENU");
+				System.out.println("1. First fit");
+				System.out.println("2. Best fit");
+				System.out.println("3. Worst fit");
+				System.out.println("0. Exit");
+
+				System.out.println("Enter your choice = ");
+				ch = Sc.nextInt();
+				if(ch < 0 || ch > 3) //validation
+				{
+					System.out.println("INVALID CHOICE, ENTER AGAIN.");
+				}
+			}while(ch < 0 || ch > 3);
+
+			switch(ch)
+			{
+			case 1: //first fit
+				process.initialize(p);
+				process.firstFit(B, p);
+				process.displayProcesses(p);
+				break;
+
+			case 2: //best fit
+				block.sortAscOrder(B);
+				process.initialize(p);
+				process.firstFit(B, p);
+				process.displayProcesses(p);
+				break;
+
+			case 3: //best fit
+				block.sortDescOrder(B);
+				process.initialize(p);
+				process.firstFit(B, p);
+				process.displayProcesses(p);
+				break;
+
+			case 0:
+				System.out.println("Thank You!");
+				break;
+
+			}
+		}while(ch != 0);
+	}
+
+}
